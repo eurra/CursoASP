@@ -1,0 +1,23 @@
+﻿@page
+@using Models
+@model ejercicio.Pages.Funcionarios.IndexModel
+@{
+    ViewData["Title"] = "Índice de Funcionarios";
+}
+
+<h1>Funcionarios</h1>
+
+<ul>
+    @foreach (var func in Model.Lista)
+    {
+        <li style ="margin: 10px;">
+            <div>RUT: @func.RUT</div>
+            <div>Estamento: @func.Estamento</div>
+            <div>Grado: @func.Grado</div>
+            <div>Antiguedad: @func.Antiguedad</div>
+            <div>Remuneración base: @Planilla.ObtenerPlanillaPara(func.Estamento).obtenerSueldoBasePara(func.Grado)</div>
+            <div>Remuneración final: @func.ObtenerRemuneracion()</div>
+            <a asp-page="/Funcionarios/Index" asp-page-handler="EliminarFuncionario" asp-route-rut=@func.RUT>[Eliminar]</a>
+        </li>
+    }
+</ul>
