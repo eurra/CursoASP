@@ -1,9 +1,9 @@
 ﻿namespace ejercicio.Models
 {
-    public enum Estamento
+    public enum Estamento : int
     {
-        Investigador,
-        Administrativo,
-        Directivo
+        Investigador = 0,
+        Administrativo = 1,
+        Directivo = 2
     }
 }

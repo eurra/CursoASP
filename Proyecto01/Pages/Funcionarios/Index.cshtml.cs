@@ -2,70 +2,31 @@ using ejercicio.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Win32;
+using Proyecto01.Models;
 
 namespace ejercicio.Pages.Funcionarios
 {
     public class IndexModel : PageModel
     {
-        public List<Funcionario> Lista { get; set; } = [];
-
-        private readonly IMemoryCache _cache;
+        private readonly IRegistroFuncionarios _registro;
+        public List<Funcionario> Lista { get; set; }
 
         [ActivatorUtilitiesConstructor]
-        public IndexModel(IMemoryCache cache)
+        public IndexModel(IRegistroFuncionarios registro)
         {
-            _cache = cache;
+            _registro = registro;
         }
-
-        private void ActualizarLista()
-        {
-            Lista = _cache.GetOrCreate<List<Funcionario>>("Lista", e =>
-            {
-                return [];
-            });
-
-            if (Cantidad == 0)
-            {
-                Lista.AddRange([
-                    new Funcionario("1.234.567-8", Estamento.Investigador)
-                    {
-                        Grado = 6,
-                        Antiguedad = 6
-                    },
-                    new Funcionario("6.624.954-5", Estamento.Directivo)
-                    {
-                        Grado = 2,
-                        Antiguedad = 10
-                    },
-                    new Funcionario("16.549.354-K", Estamento.Administrativo)
-                    {
-                        Grado = 10,
-                        Antiguedad = 2
-                    }
-                ]);
-            }
-        }
-
-        public int Cantidad { get => Lista.Count(); }
 
         public void OnGet()
         {
-            ActualizarLista();
+            Lista = _registro.ObtenerFuncionarios();
         }
 
         public void OnGetEliminarFuncionario(string rut)
         {
-            ActualizarLista();
-
-            Funcionario found = (from func in Lista where func.RUT == rut select func).First();
-            Lista.Remove(found);
-        }
-
-        public void OnGetAjustarGrado(string rut, int grado)
-        {
-            ActualizarLista();
-            Funcionario found = (from func in Lista where func.RUT == rut select func).First();
-            found.Grado = grado;
+            _registro.EliminarFuncionario(rut);
+            Lista = _registro.ObtenerFuncionarios();
         }
     }
 }

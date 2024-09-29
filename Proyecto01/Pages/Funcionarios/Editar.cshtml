@@ -1,0 +1,31 @@
+﻿@page
+@model Proyecto01.Pages.Funcionarios.EditarModel
+@{
+    ViewData["Title"] = "Modificar Funcionario";
+}
+
+<h1>Editar funcionario</h1>
+
+<form asp-page-handler="Modificar" method="post">
+    <div class="col-lg-1">
+        <div>RUT:</div>
+        <div>@Model.Func.RUT</div>
+    </div>
+    <div class="col-lg-1">
+        <div>Estamento:</div>
+        <div>@Model.Func.Estamento</div>
+    </div>
+    <div class="col-lg-1">
+        <div>Grado:</div>
+        <input type="text" name="grado" value="@Model.Func.Grado" />
+    </div>
+    <div class="col-lg-1">
+        <div>Antiguedad:</div>
+        <input type="text" name="antig" value="@Model.Func.Antiguedad" />
+    </div>
+    <input type="hidden" name="rut" value="@Model.Func.RUT"/>
+    <div class="col-lg-1 btn-group p-2">
+        <button class="btn btn-primary">Modificar</button> &nbsp;
+        <button class="btn btn-secondary">Cancelar</button>
+    </div>    
+</form>

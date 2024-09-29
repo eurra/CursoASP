@@ -49,12 +49,17 @@
             Sueldos = sueldos;
         }
 
-        public int obtenerSueldoBasePara(int grado)
+        public int ObtenerSueldoBasePara(int grado)
         {
             if (!Sueldos.ContainsKey(grado))
                 throw new Exception("Grado no definido");
 
             return Sueldos[grado];
+        }
+
+        public int[] ObtenerGradosValidos()
+        {
+            return Sueldos.Keys.ToArray();
         }
     }
 }

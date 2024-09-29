@@ -1,7 +1,10 @@
+using Proyecto01.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+builder.Services.AddScoped<IRegistroFuncionarios, RegistroFuncionariosCache>();
 
 var app = builder.Build();
 

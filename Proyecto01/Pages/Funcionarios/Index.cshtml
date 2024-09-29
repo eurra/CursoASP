@@ -7,6 +7,10 @@
 
 <h1>Funcionarios</h1>
 
+<div class="btn-group p-2">
+    <a asp-page="/Funcionarios/Agregar"><button class="btn btn-primary">Agregar funcionario</button></a>
+</div>
+
 <ul>
     @foreach (var func in Model.Lista)
     {
@@ -15,8 +19,9 @@
             <div>Estamento: @func.Estamento</div>
             <div>Grado: @func.Grado</div>
             <div>Antiguedad: @func.Antiguedad</div>
-            <div>Remuneración base: @Planilla.ObtenerPlanillaPara(func.Estamento).obtenerSueldoBasePara(func.Grado)</div>
+            <div>Remuneración base: @Planilla.ObtenerPlanillaPara(func.Estamento).ObtenerSueldoBasePara(func.Grado)</div>
             <div>Remuneración final: @func.ObtenerRemuneracion()</div>
+            <a asp-page="/Funcionarios/Editar" asp-route-rut=@func.RUT>[Editar]</a>&nbsp;
             <a asp-page="/Funcionarios/Index" asp-page-handler="EliminarFuncionario" asp-route-rut=@func.RUT>[Eliminar]</a>
         </li>
     }

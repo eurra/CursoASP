@@ -1,0 +1,37 @@
+﻿@page
+@using Models
+@model Proyecto01.Pages.Funcionarios.AgregarModel
+@{
+    ViewData["Title"] = "Agregar Funcionario";
+}
+
+<h1>Agregar funcionario</h1>
+
+<form asp-page-handler="Agregar" method="post">
+    <div class="col-lg-1">
+        <div>RUT:</div>
+        <input type="text" name="rut"/>
+    </div>
+    <div class="col-lg-1">
+        <div>Estamento:</div>
+        <div>
+            <select name="estamento" value="0">
+                @foreach (var est in Enum.GetValues(typeof(Estamento))) {
+                    <option value="@((int)est)">@est.ToString()</option>
+                }
+            </select>
+        </div>
+    </div>
+    <div class="col-lg-1">
+        <div>Grado:</div>
+        <input type="text" name="grado"/>
+    </div>
+    <div class="col-lg-1">
+        <div>Antiguedad:</div>
+        <input type="text" name="antig"/>
+    </div>
+    <div class="col-lg-1 btn-group p-2">
+        <button class="btn btn-primary">Agregar</button> &nbsp;
+        <button class="btn btn-secondary">Cancelar</button>
+    </div>
+</form>

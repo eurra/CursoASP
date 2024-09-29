@@ -1,6 +1,5 @@
 ﻿namespace ejercicio.Models
 {   
-
     public class Funcionario
     {
         public string RUT { get; }
@@ -20,7 +19,7 @@
         public int ObtenerRemuneracion()
         {
             int sueldoBase = Planilla.ObtenerPlanillaPara(Estamento).
-                obtenerSueldoBasePara(Grado);
+                ObtenerSueldoBasePara(Grado);
 
             int bonoAntiguedad = (Antiguedad / 3) * 100000;
             return sueldoBase + bonoAntiguedad;
