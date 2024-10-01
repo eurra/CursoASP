@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Proyecto02.Models;
 
 namespace Proyecto02.Controllers
 {
@@ -17,21 +18,34 @@ namespace Proyecto02.Controllers
         }        
 
         // GET: /Compra/SeleccionEquipo/
-        public string SeleccionEquipo()
+        public IActionResult SeleccionEquipo()
         {
-            return "Paso I: selección equipo.";
+            ViewData["Paso"] = "Paso I - Selección de equipo";
+            return View();
         }
 
         // GET: /Compra/SeleccionModelo/
-        public string SeleccionModelo(string? nombre = "SIN NOMBRE")
+        public IActionResult SeleccionModelo(string equipo = "Equipo NN")
         {
-            return "Paso II: selección modelo para equipo : '" + nombre + "'";
+            ViewData["Paso"] = "Paso II - Selección de modelo";
+            ViewData["Equipo"] = equipo;
+
+            return View();
         }
 
         // GET: /Compra/Confirmacion/
-        public string Confirmación()
+        public IActionResult Confirmacion(int precio, string modelo = "Modelo NN")
         {
-            return "Paso III: selección modelo";
+            var equipo = new Equipo(
+                new ModeloEquipo(TipoEquipo.Dosimetro, modelo),
+                precio
+            );
+
+            ViewData["Paso"] = "Paso III - Confirmación compra";
+            ViewData["Equipo"] = equipo.Modelo.Tipo;
+            ViewData["Modelo"] = equipo.Modelo.Nombre;
+
+            return View(equipo);
         }
     }
 }
