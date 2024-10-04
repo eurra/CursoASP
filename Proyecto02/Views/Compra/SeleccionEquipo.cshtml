@@ -4,4 +4,25 @@
 
 <h1>@ViewData["Paso"]</h1>
 
-<p>Implementar selección de equipo</p>
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="SeleccionModelo" method="post">
+            <div class="form-group">
+                <label class="control-label">Seleccionar tipo de equipo:</label>
+                <select name="tipo" class="form-control">
+                    @foreach (var tipo in Enum.GetValues(typeof(TipoEquipo)))
+                    {
+                        <option default value="@((int)tipo)">@(((TipoEquipo)tipo).Nombre())</option>
+                    }                    
+                </select>
+            </div>
+            <div class="col-lg-1 btn-group p-2">
+                <button class="btn btn-primary">Siguiente</button> &nbsp;
+                <a asp-controller="Compra" asp-action="Index">
+                    <button type="button" class="btn btn-secondary">Cancelar</button>
+                </a>
+            </div>            
+        </form>
+    </div>
+</div>
+

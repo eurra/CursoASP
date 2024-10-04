@@ -1,10 +1,38 @@
-﻿@{
+﻿@model Proyecto02.Models.IMantenedorCompras
+
+@{
     ViewData["Title"] = "Adquisición de equipos";
+    var compras = Model.ObtenerCompras();
 }
 
 <h1>@ViewData["Title"]</h1>
 
-<p>Hola Mundo</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Tipo equipo</th>
+            <th>Nombre modelo</th>
+            <th>Precio</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var compra in compras)
+        {
+            <tr>
+                <td>@compra.Modelo.Tipo</td>
+                <td>@compra.Modelo.Nombre</td>
+                <td>
+                    @string.Format("{0:C}", compra.Precio)
+                </td>
+                <td>
+                    <a asp-page="">Quitar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
 <a class="nav-link" asp-controller="Compra" asp-action="SeleccionEquipo">
     <button class="btn btn-primary">Nueva compra</button>
 </a>

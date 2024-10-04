@@ -1,9 +1,38 @@
-﻿@{
+﻿@model Proyecto02.Models.IMantenedorCompras
+
+@{
     ViewData["Title"] = "Adquisición de equipos";
+    TipoEquipo tipo = (TipoEquipo)ViewData["Tipo"];
+    List<string> modelos = new (Model.ObtenerModelosPara(tipo));
 }
 
 <h1>@ViewData["Paso"]</h1>
 
-<h3>Equipo: @ViewData["Equipo"]</h3>
+<h3>Tipo equipo: @tipo.Nombre()</h3>
 
-<p>Implementar selección de modelo</p>
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Confirmacion" method="post">
+            <div class="form-group">
+                <label class="control-label">Seleccionar modelo:</label>
+                <select name="modelo" class="form-control">
+                    @foreach (var (modelo, i) in modelos.Select((modelo, i) => (modelo, i)))
+                    {
+                        <option default value="@i">@modelo</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Precio:</label>
+                <input class="form-control" type="number" name="precio" min="1"/>
+            </div>
+            <div class="col-lg-1 btn-group p-2">
+                <button class="btn btn-primary">Siguiente</button> &nbsp;
+                <a asp-controller="Compra" asp-action="Index">
+                    <button type="button" class="btn btn-secondary">Cancelar</button>
+                </a>
+            </div>
+            <input type="hidden" name="tipo" value="@ViewData["Tipo"]"/>
+        </form>
+    </div>
+</div>
