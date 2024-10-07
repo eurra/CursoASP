@@ -14,18 +14,30 @@ namespace Proyecto02.Models
             Equipos = cache.GetOrCreate<List<Equipo>>("Equipos", e =>
             {
                 return [
-                    new Equipo(
-                        new ModeloEquipo(TipoEquipo.Dosimetro, "Dosímetro Simple"),
-                        50000000
-                    ),
-                    new Equipo(
-                        new ModeloEquipo(TipoEquipo.Microscopio, "Microscopio Simple"),
-                        150000
-                    ),
-                    new Equipo(
-                        new ModeloEquipo(TipoEquipo.Espectrometro, "Espectrómetro Simple"),
-                        35000000
-                    )
+                    new() {
+                        Id = 0,
+                        Modelo = new() {
+                            Tipo = TipoEquipo.Dosimetro,
+                            Nombre = "Dosímetro Simple"
+                        },
+                        Precio = 50000000
+                    },
+                    new() {
+                        Id = 1,
+                        Modelo = new() {
+                            Tipo = TipoEquipo.Microscopio,
+                            Nombre = "Microscopio Simple"
+                        },
+                        Precio = 150000
+                    },
+                    new() {
+                        Id = 2,
+                        Modelo = new() {
+                            Tipo = TipoEquipo.Espectrometro,
+                            Nombre = "Espectrómetro Simple"
+                        },
+                        Precio = 3500000
+                    }
                 ];
             });
         }
@@ -58,9 +70,25 @@ namespace Proyecto02.Models
             }
         }
 
-        public void AgregarCompra(Equipo compra)
+        public Equipo AgregarCompra(ModeloEquipo modelo, int precio)
         {
-            Equipos.Add(compra);
+            Equipo nuevo = new() 
+            {
+                Modelo = modelo,
+                Precio = precio
+            };
+
+            Equipos.Add(nuevo);
+            return nuevo;
+        }
+
+        public Equipo EliminarCompra(int id)
+        {
+            int pos = Equipos.FindIndex(e => e.Id == id);
+            Equipo toRem = Equipos[pos];
+            Equipos.RemoveAt(pos);
+
+            return toRem;
         }
     }
 }

@@ -4,6 +4,7 @@
     {
         List<Equipo> ObtenerCompras();
         string[] ObtenerModelosPara(TipoEquipo tipo);
-        void AgregarCompra(Equipo compra);
+        Equipo AgregarCompra(ModeloEquipo modelo, int precio);
+        Equipo EliminarCompra(int id);
     }
 }

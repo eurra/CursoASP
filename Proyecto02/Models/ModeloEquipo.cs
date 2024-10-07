@@ -2,13 +2,7 @@
 {
     public class ModeloEquipo
     {
-        public TipoEquipo Tipo { get; }
-        public string Nombre { get; }
-
-        public ModeloEquipo(TipoEquipo tipo, string modelo)
-        {
-            Tipo = tipo;
-            Nombre = modelo;
-        }
+        public TipoEquipo Tipo { get; set; }
+        public string Nombre { get; set; }
     }
 }

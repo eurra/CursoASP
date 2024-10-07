@@ -1,11 +1,23 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Proyecto02.Models;
+using System.Reflection;
 
 namespace Proyecto02.Controllers
 {
+    public enum PasoWorkflow
+    {
+        SeleccionEquipo = 0,
+        SeleccionModelo = 1,
+        Confirmacion = 2,
+        Agregar = 3
+    }
+
     public class CompraController : Controller
     {
         private IMantenedorCompras _mantenedor;
+
+        [BindProperty]
+        public Equipo? Equipo { get; set; }
 
         public CompraController(IMantenedorCompras mantenedor)
         {
@@ -22,66 +34,86 @@ namespace Proyecto02.Controllers
         public IActionResult Index()
         {
             return View(_mantenedor);
-        }        
+        }
+
+        [HttpPost]
+        public IActionResult WorkflowCompra(PasoWorkflow paso)
+        {
+            switch (paso)
+            {
+                case PasoWorkflow.SeleccionEquipo: return SeleccionEquipo();
+                case PasoWorkflow.SeleccionModelo: return SeleccionModelo();
+                case PasoWorkflow.Confirmacion: return Confirmacion();
+                case PasoWorkflow.Agregar: return AgregarCompra();
+                default: return RedirectToAction("Index");
+            }   
+        }
 
         // GET: /Compra/SeleccionEquipo/
         public IActionResult SeleccionEquipo()
         {
-            ViewData["Paso"] = "Paso I - Selección de equipo";
-            return View();
-        }
+            Equipo = new()
+            {
+                Modelo = new() { Nombre = "", Tipo = TipoEquipo.Microscopio },
+                Precio = 100
+            };
 
-        // GET: /Compra/SeleccionModelo/
-        [HttpGet]
-        public string SeleccionModelo()
-        {
-            return "Acceso restringido";
+            ViewData["Paso"] = "Paso I - Selección de equipo";
+            ViewData["Tipos"] = Enum.GetValues(typeof(TipoEquipo));
+
+            return View("SeleccionEquipo", Equipo);
         }
 
         // POST: /Compra/SeleccionModelo/
         [HttpPost]
-        public IActionResult SeleccionModelo(int tipo)
+        public IActionResult SeleccionModelo()
         {
-            ViewData["Paso"] = "Paso II - Selección de modelo";
-            ViewData["Tipo"] = tipo;
+            List<string> modelos = new (
+                _mantenedor.ObtenerModelosPara(Equipo.Modelo.Tipo)
+            );
 
-            return View(_mantenedor);
+            ViewData["Paso"] = "Paso II - Selección de modelo";
+            ViewData["Modelos"] = modelos;
+
+            return View("SeleccionModelo", Equipo);
         }
 
-        // GET: /Compra/SeleccionModelo/
-        [HttpGet]
+        /*[HttpGet]
         public string Confirmacion()
         {
             return "Acceso restringido";
-        }
+        }*/
 
-        private Equipo GenerarInstanciaEquipo(int tipo, int precio, int modelo)
+        /*private ModeloEquipo GenerarInstanciaModelo(int tipo, int modelo)
         {
             TipoEquipo tipoE = (TipoEquipo)tipo;
             string modeloT = _mantenedor.ObtenerModelosPara(tipoE)[modelo];
 
-            return new Equipo(
-                new ModeloEquipo(tipoE, modeloT),
-                precio
-            );
+            return new ModeloEquipo(tipoE, modeloT);
+        }*/
+
+        [HttpPost]
+        public IActionResult Confirmacion()
+        {
+            if (!ModelState.IsValid)
+            {
+                return SeleccionModelo();
+            }
+
+            ViewData["Paso"] = "Paso III - Confirmación compra";
+            return View("Confirmacion", Equipo);
         }
 
         [HttpPost]
-        public IActionResult Confirmacion(int tipo, int precio, int modelo)
+        public IActionResult AgregarCompra()
         {
-            var equipo = GenerarInstanciaEquipo(tipo, precio, modelo);
-
-            ViewData["Paso"] = "Paso III - Confirmación compra";
-            ViewData["ModeloNum"] = modelo;
-
-            return View(equipo);
+            _mantenedor.AgregarCompra(Equipo.Modelo, Equipo.Precio);
+            return RedirectToAction("Index");
         }
 
-        public IActionResult AgregarCompra(int tipo, int precio, int modelo)
+        public IActionResult Eliminar(int id)
         {
-            var equipo = GenerarInstanciaEquipo(tipo, precio, modelo);
-            _mantenedor.AgregarCompra(equipo);
-
+            _mantenedor.EliminarCompra(id);
             return RedirectToAction("Index");
         }
     }

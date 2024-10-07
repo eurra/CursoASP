@@ -1,16 +1,21 @@
-﻿@{
+﻿@model Proyecto02.Models.Equipo
+@{
     ViewData["Title"] = "Adquisición de equipos";
+    var tipos = ViewData["Tipos"] as Array;
 }
 
 <h1>@ViewData["Paso"]</h1>
 
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="SeleccionModelo" method="post">
+        <form asp-action="WorkflowCompra" method="post">
+            <input type="hidden" name="paso" value="1" />
+            <input type="hidden" asp-for="Modelo.Nombre" />
+            <input type="hidden" asp-for="Precio" />
             <div class="form-group">
                 <label class="control-label">Seleccionar tipo de equipo:</label>
-                <select name="tipo" class="form-control">
-                    @foreach (var tipo in Enum.GetValues(typeof(TipoEquipo)))
+                <select asp-for="Modelo.Tipo" class="form-control">
+                    @foreach (var tipo in tipos)
                     {
                         <option default value="@((int)tipo)">@(((TipoEquipo)tipo).Nombre())</option>
                     }                    

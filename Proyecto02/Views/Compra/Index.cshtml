@@ -26,13 +26,15 @@
                     @string.Format("{0:C}", compra.Precio)
                 </td>
                 <td>
-                    <a asp-page="">Quitar</a>
+                    <a asp-action="Eliminar" asp-route-id="@compra.Id">Quitar</a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
 
-<a class="nav-link" asp-controller="Compra" asp-action="SeleccionEquipo">
+<form asp-action="WorkflowCompra" method="post">
     <button class="btn btn-primary">Nueva compra</button>
-</a>
+    <input type="hidden" name="paso" value="0"/>
+</form>
+
