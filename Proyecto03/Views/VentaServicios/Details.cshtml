@@ -9,18 +9,12 @@
 <div>
     <h4>VentaServicio</h4>
     <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Cliente)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Cliente.ClienteID)
-        </dd>
+    <dl class="row">        
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Servicio)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Servicio.ServicioID)
+            @Html.DisplayFor(model => model.Servicio.Descripcion)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.EstadoVentaServicio)
@@ -39,6 +33,24 @@
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.TotalPagado)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Cliente)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Cliente.RUT)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Cliente.Representantes):
+        </dt>
+        <dd>
+            <ul>
+            @foreach (var repr in Model.Cliente.Representantes)
+            {
+                var text = repr.Nombre + " - " + repr.Correo + " - " + repr.Telefono;
+                <li>@Html.DisplayFor(model => text)</li>
+            }
+            </ul>
         </dd>
     </dl>
 </div>

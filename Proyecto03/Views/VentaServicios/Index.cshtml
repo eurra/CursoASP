@@ -7,7 +7,8 @@
 <h1>Index</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">[Create New]</a>
+    <a asp-action="GenerarReporte">[Generar reporte]</a>
 </p>
 <table class="table">
     <thead>
@@ -16,8 +17,11 @@
                 @Html.DisplayNameFor(model => model.Cliente)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Servicio)
+                @Html.DisplayNameFor(model => model.Servicio.CategoriaServicio)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Servicio)
+            </th>            
             <th>
                 @Html.DisplayNameFor(model => model.EstadoVentaServicio)
             </th>
@@ -34,11 +38,14 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Cliente.ClienteID)
+                @Html.DisplayFor(modelItem => item.Cliente.RUT)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Servicio.ServicioID)
+                @Html.DisplayFor(modelItem => item.Servicio.CategoriaServicio.Nombre)
             </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Servicio.Descripcion)
+            </td>            
             <td>
                 @Html.DisplayFor(modelItem => item.EstadoVentaServicio)
             </td>
