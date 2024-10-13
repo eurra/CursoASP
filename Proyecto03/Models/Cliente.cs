@@ -18,6 +18,6 @@ namespace Proyecto03.Models
         public string Descripcion { get => RUT + ": " + Nombre; }
         [Display(Name = "Tipo de cliente")]
         public TipoCliente TipoCliente { get; set; }
-        public ICollection<Representante> Representantes { get; set; }
+        public ICollection<Representante>? Representantes { get; set; }
     }
 }

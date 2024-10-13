@@ -1,0 +1,129 @@
+﻿@model Proyecto03.Models.VentaServicio
+@{
+    ViewData["Title"] = "Reporte anidado de ventas";
+}
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script type ="text/javascript">
+        $("#idCliente").change(function () {
+            let cliente = {
+                ClienteID: this.value
+            };
+
+            $("#idCategoria").
+                find('option').
+                remove();
+
+            $("#tablaVentas").
+                find('tr').
+                remove();
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("ObtenerCategoriasParaCliente", "VentaServicios")',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                data: JSON.stringify(cliente),
+                success: function (response) {
+                    console.log(response);
+
+                    if (response.length == 0) {
+                        alert("El cliente no tiene ventas asociadas.")
+                    }
+                    else {
+                        $("#idCategoria").
+                            append('<option value="0" selected>-- Seleccionar --</option>');
+
+                        $.each(response, (i, item) => {
+                            $("#idCategoria").append($('<option>', {
+                                value: item.categoriaServicioID,
+                                text: item.nombre
+                            }));
+                        });
+                    }         
+                },
+                error: function (xhr, status, error) {
+                    $('#responseMessage').html("An error occurred: " + error);
+                }
+            });            
+        });
+
+        $("#idCategoria").change(function () {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("ObtenerVentasPorCategoria", "VentaServicios")',
+                contentType: 'application/x-www-form-urlencoded',
+                data: { idCliente: $("#idCliente").val(), idCategoria: this.value },
+                success: function (response) {
+                    console.log(response);
+
+                    $("#tablaVentas").
+                        find('tr').
+                        remove();
+
+                    $.each(response, (i, item) => {
+                        $("#tablaVentas").append(
+                            $('<tr>').append([
+                                $('<td>').html(item.servicio.descripcion),
+                                $('<td>').html(item.estadoVentaServicio),
+                                $('<td>').html(item.totalVenta),
+                                $('<td>').html(item.totalPagado)
+                            ])
+                        );
+                    });
+                },
+                error: function (xhr, status, error) {
+                    $('#responseMessage').html("An error occurred: " + error);
+                }
+            });
+        });
+    </script>
+}
+
+<h1>Reporte anidado de ventas</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label class="control-label">Cliente</label>
+                <select id="idCliente" name="idCliente" class="form-control" asp-items="ViewBag.ClienteID">
+                    <option selected></option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Categoría</label>
+                <select id="idCategoria" name="idCategoria" class="form-control" asp-items="ViewBag.CategoriaServicioID">
+                    <option selected></option>
+                </select>
+            </div>
+        </form>
+    </div>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Servicio)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EstadoVentaServicio)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TotalVenta)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TotalPagado)
+            </th>
+        </tr>
+    </thead>
+    <tbody id="tablaVentas">        
+    </tbody>
+</table>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
