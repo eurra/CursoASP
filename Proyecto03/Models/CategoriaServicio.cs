@@ -1,4 +1,6 @@
-﻿namespace Proyecto03.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Proyecto03.Models
 {
     public class CategoriaServicio
     {

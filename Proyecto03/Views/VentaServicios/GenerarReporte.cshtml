@@ -1,0 +1,112 @@
+﻿@model dynamic
+
+@{
+    ViewData["Title"] = "Reporte de ventas";
+    var tipoReporte = (int)ViewData["TipoReporte"];
+}
+
+<h1>Reporte de ventas</h1>
+
+@if (tipoReporte == 1)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Cliente
+                </th>
+                <th>
+                    Categoría
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model) {
+            <tr>
+                <td>
+                    @item.RUTCliente
+                </td>
+                <td>
+                    @item.Categoria
+                </td>
+            </tr>}
+        </tbody>
+    </table>
+}
+else if (tipoReporte == 2)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Cliente
+                </th>
+                <th>
+                    Categoría
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @item.RUTCliente
+                    </td>
+                    <td>
+                        <ul>
+                        @foreach (var venta in item.Ventas)
+                        {
+                            <li>@venta.Servicio.CategoriaServicio.Nombre</li>
+                        }
+                        </ul>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else if (tipoReporte == 3)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Cliente
+                </th>
+                <th>
+                    Categoría
+                </th>
+                <th>
+                    Total ventas
+                </th>
+                <th>
+                    Monto ventas
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @item.RUT
+                    </td>
+                    <td>
+                        @item.Categoria
+                    </td>
+                    <td>
+                        @item.TotalVentas
+                    </td>
+                    <td>
+                        @string.Format("{0:C}", item.MontoVentas)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>

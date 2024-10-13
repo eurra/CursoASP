@@ -10,6 +10,12 @@ using Proyecto03.Models;
 
 namespace Proyecto03.Controllers
 {
+    public class ItemReporte
+    {
+        public string RUTCliente { get; set; }
+        public string Categoria { get; set; }
+    }
+
     public class VentaServiciosController : Controller
     {
         private readonly ServiciosContext _context;
@@ -22,7 +28,11 @@ namespace Proyecto03.Controllers
         // GET: VentaServicios
         public async Task<IActionResult> Index()
         {
-            var serviciosContext = _context.VentaServicios.Include(v => v.Cliente).Include(v => v.Servicio);
+            var serviciosContext = _context.VentaServicios.
+                Include(v => v.Cliente).
+                Include(v => v.Servicio).
+                Include(v => v.Servicio.CategoriaServicio);
+
             return View(await serviciosContext.ToListAsync());
         }
 
@@ -37,6 +47,7 @@ namespace Proyecto03.Controllers
             var ventaServicio = await _context.VentaServicios
                 .Include(v => v.Cliente)
                 .Include(v => v.Servicio)
+                .Include(v => v.Cliente.Representantes)
                 .FirstOrDefaultAsync(m => m.VentaServicioID == id);
             if (ventaServicio == null)
             {
@@ -49,8 +60,20 @@ namespace Proyecto03.Controllers
         // GET: VentaServicios/Create
         public IActionResult Create()
         {
-            ViewData["ClienteID"] = new SelectList(_context.Clientes, "ClienteID", "ClienteID");
-            ViewData["ServicioID"] = new SelectList(_context.Servicios, "ServicioID", "ServicioID");
+            var servicios = new List<SelectListItem>();
+
+            foreach (var servicio in _context.Servicios)
+            {
+                var item = new SelectListItem();
+                item.Value = servicio.ServicioID.ToString();
+                item.Text = servicio.ServicioID + " - " + servicio.Descripcion;
+                servicios.Add(item);
+            }
+
+            //ViewData["ServicioID"] = new SelectList(_context.Servicios, "ServicioID", "Descripcion");
+            ViewData["ServicioID"] = new SelectList(servicios, "Value", "Text");
+            ViewData["ClienteID"] = new SelectList(_context.Clientes, "ClienteID", "Descripcion");
+            
             return View();
         }
 
@@ -81,12 +104,14 @@ namespace Proyecto03.Controllers
             }
 
             var ventaServicio = await _context.VentaServicios.FindAsync(id);
+
             if (ventaServicio == null)
             {
                 return NotFound();
             }
-            ViewData["ClienteID"] = new SelectList(_context.Clientes, "ClienteID", "ClienteID", ventaServicio.ClienteID);
-            ViewData["ServicioID"] = new SelectList(_context.Servicios, "ServicioID", "ServicioID", ventaServicio.ServicioID);
+
+            ViewData["ClienteID"] = new SelectList(_context.Clientes, "ClienteID", "RUT", ventaServicio.ClienteID);
+            ViewData["ServicioID"] = new SelectList(_context.Servicios, "ServicioID", "Descripcion", ventaServicio.ServicioID);
             return View(ventaServicio);
         }
 
@@ -173,19 +198,47 @@ namespace Proyecto03.Controllers
                 Include(v => v.Servicio).
                 Include(v => v.Servicio.CategoriaServicio).ToListAsync();
 
+            /* Versión simple - solo listado
+            ViewData["TipoReporte"] = 1;
+
+            var reporte = from cliente in _context.Clientes
+                          join venta in _context.VentaServicios on cliente.ClienteID equals venta.ClienteID
+                          select new
+                          {
+                              RUTCliente = cliente.RUT,
+                              Categoria = venta.Servicio.CategoriaServicio.Nombre
+                          };
+            */
+
+            /* Versión agrupada - listado por cliente
+            ViewData["TipoReporte"] = 2;
+
+            var reporte = from cliente in _context.Clientes
+                          join venta in _context.VentaServicios on cliente.ClienteID equals venta.ClienteID into ventasGroup
+                          select new
+                          {
+                              RUTCliente = cliente.RUT,
+                              Ventas = ventasGroup
+                          };
+
+            return View(await reporte.ToListAsync());
+            */
+
+            ViewData["TipoReporte"] = 3;
+
             var reporteIndex = (from cliente in _context.Clientes
-                                join venta in _context.VentaServicios on cliente.ClienteID equals venta.ClienteID
-                                select new
-                                {
-                                    ClienteID = cliente.ClienteID,
-                                    RUT = cliente.RUT,
-                                    CategoriaServicioID = venta.Servicio.CategoriaServicio.CategoriaServicioID,
-                                    Categoria = venta.Servicio.CategoriaServicio.Nombre
-                                }).Distinct().ToList();
+                          join venta in _context.VentaServicios on cliente.ClienteID equals venta.ClienteID
+                          select new
+                          {
+                              ClienteID = cliente.ClienteID,
+                              RUT = cliente.RUT,
+                              CategoriaServicioID = venta.Servicio.CategoriaServicio.CategoriaServicioID,
+                              Categoria = venta.Servicio.CategoriaServicio.Nombre
+                          }).Distinct().ToList();
 
             var reporte = from fila in reporteIndex
-                          join venta in _context.VentaServicios
-                          on new { fila.ClienteID, fila.CategoriaServicioID } equals new { venta.ClienteID, venta.Servicio.CategoriaServicio.CategoriaServicioID }
+                          join venta in _context.VentaServicios 
+                          on new { fila.ClienteID, fila.CategoriaServicioID } equals new { venta.ClienteID, venta.Servicio.CategoriaServicio.CategoriaServicioID } 
                           into ventasGroup
                           select new
                           {
