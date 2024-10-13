@@ -166,5 +166,76 @@ namespace Proyecto03.Controllers
         {
             return _context.VentaServicios.Any(e => e.VentaServicioID == id);
         }
+
+        public async Task<IActionResult> GenerarReporte()
+        {
+            var servicios = await _context.VentaServicios.
+                Include(v => v.Servicio).
+                Include(v => v.Servicio.CategoriaServicio).ToListAsync();
+
+            var reporteIndex = (from cliente in _context.Clientes
+                                join venta in _context.VentaServicios on cliente.ClienteID equals venta.ClienteID
+                                select new
+                                {
+                                    ClienteID = cliente.ClienteID,
+                                    RUT = cliente.RUT,
+                                    CategoriaServicioID = venta.Servicio.CategoriaServicio.CategoriaServicioID,
+                                    Categoria = venta.Servicio.CategoriaServicio.Nombre
+                                }).Distinct().ToList();
+
+            var reporte = from fila in reporteIndex
+                          join venta in _context.VentaServicios
+                          on new { fila.ClienteID, fila.CategoriaServicioID } equals new { venta.ClienteID, venta.Servicio.CategoriaServicio.CategoriaServicioID }
+                          into ventasGroup
+                          select new
+                          {
+                              RUT = fila.RUT,
+                              Categoria = fila.Categoria,
+                              TotalVentas = ventasGroup.Count(),
+                              MontoVentas = ventasGroup.Sum(v => v.TotalVenta)
+                          };
+
+            return View(reporte.ToList());
+        }
+
+        public async Task<IActionResult> GenerarReporteAnidado(int idCliente = -1, int idCategoria = -1)
+        {
+            var servicios = await _context.VentaServicios.
+                Include(v => v.Servicio).
+                Include(v => v.Servicio.CategoriaServicio).ToListAsync();
+
+
+            ViewData["ClienteID"] = new SelectList(_context.Clientes, "ClienteID", "RUT");
+            return View("ReporteAnidado");
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> ObtenerCategoriasParaCliente([FromBody] Cliente cliente)
+        {
+            var categorias = (from venta in _context.VentaServicios
+                                where venta.ClienteID == cliente.ClienteID
+                                select venta.Servicio.CategoriaServicio
+                            ).
+                            Distinct().
+                            ToList();
+
+            return Json(categorias);
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> ObtenerVentasPorCategoria(int idCliente, int idCategoria)
+        {
+            var serviciosContext = _context.VentaServicios.
+                Include(v => v.Servicio);
+
+            var ventas = (from venta in serviciosContext
+                          where venta.ClienteID == idCliente && venta.Servicio.CategoriaServicioID == idCategoria
+                              select venta
+                            ).
+                            Distinct().
+                            ToList();
+
+            return Json(ventas);
+        }
     }
 }

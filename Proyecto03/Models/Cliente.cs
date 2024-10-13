@@ -12,6 +12,6 @@
         public string Nombre { get; set; }
         public TipoCliente TipoCliente { get; set; }
 
-        public ICollection<Representante> Representantes { get; set; }
+        public ICollection<Representante>? Representantes { get; set; }
     }
 }
