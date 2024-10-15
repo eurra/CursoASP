@@ -1,0 +1,24 @@
+﻿@using Proyecto04.Areas.Identity.Models
+@model IEnumerable<MiUser>
+@{
+    ViewData["Title"] = "Index usuarios";
+}
+
+<h1>Usuarios</h1>
+<a asp-action="Crear" class="btn btn-secondary">Crear un usuario</a>
+
+<table class="table table-sm table-bordered">
+    <tr>
+        <th>ID</th>
+        <th>Username</th>
+        <th>Email</th>
+    </tr>
+    @foreach (MiUser user in Model)
+    {
+        <tr>
+            <td>@user.Id</td>
+            <td>@user.UserName</td>
+            <td>@user.Email</td>
+        </tr>
+    }
+</table>
